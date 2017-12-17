@@ -4,7 +4,8 @@ from math import ceil
 from .time_util import sleep
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
-
+import pdb 
+import re 
 
 def like_image(browser):
 	""" Like the browser opened image and return True. 
@@ -24,100 +25,84 @@ def like_image(browser):
 		print('--> Invalid Like Element!')
 	return liked
 
-def get_links_for_username(browser, username, amount, is_random=False, media=None):
-	"""Fetches the number of links specified
+def get_links(browser, username=None, amount=3, is_random=False, media=None, skip_top=True, tag=None, type_flag='user'):	
+	"""Fetches the number of links specified type (type_flag='user'/'tag')
 		by amount and returns a list of links
 		Raises: NoSuchElementException
 	"""
-	if media is None:
-		# All known media types
-		media = ['', 'Post', 'Video']
-	elif media == 'Photo':
-		# Include posts with multiple images in it
-		media = ['', 'Post']
-	else:
-		# Make it an array to use it in the following part
-		media = [media]
-
-
-
-	print('Attempting to get image list for {}/'.format(username))
-	browser.get('https://www.instagram.com/' + username)
+	media = get_media_formats(media)
+	if type_flag == 'user':
+		print('Attempting to get image list for {}'.format(username))
+		browser.get('https://www.instagram.com/' + username)
+	elif type_flag == 'tag':
+		print('Attempting to get image for TAG {}/'.format(tag))		
+		browser.get('https://www.instagram.com/explore/tags/' + (tag[1:] if tag[:1] == '#' else tag))		
 	sleep(2)
 	body_elem = browser.find_element_by_tag_name('body')
-	try:
-		is_private = body_elem.find_element_by_xpath('//h2[@class="_kcrwx"]')
-		if is_private:
-			print('This user is private...')
-			return False
-	except:
-		print('Beginning interaction')	
 	sleep(2)
 
-	# Clicking load more
-	abort = True
+	links = []
 	try:
-		load_button = body_elem.find_element_by_xpath( '//a[contains(@class, "_1cr2e _epyes")]')
-		abort = False
-		body_elem.send_keys(Keys.END)
-		sleep(2)
-		load_button.click()
-	except:
-		print('Load button not found, working with current images!')
-	body_elem.send_keys(Keys.HOME)
-	sleep(2)
-
-
-	# Get Links
-	try:
-		main_elem = browser.find_element_by_tag_name('main')
+		if type_flag == 'tag' and skip_top_posts:
+			main_elem = browser.find_element_by_xpath('//main/article/div[2]')
+		elif type_flag == 'user':
+			main_elem = browser.find_element_by_tag_name('main')
+			if is_random:
+				browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+				sleep(2)
 		link_elems = main_elem.find_elements_by_tag_name('a')
-		total_links = len(link_elems)
-		links = []
-		filtered_links = 0
 		if link_elems:
-			links = [link_elem.get_attribute('href') for link_elem in link_elems
-					if link_elem and link_elem.text in media]
-			filtered_links = len(links)
+			links = [link_elem.get_attribute('href') for link_elem in link_elems if link_elem and link_elem.text in media]
 	except BaseException as e:
 		print("link_elems error \n", str(e))
 		raise NoSuchElementException
-
 	if is_random:
-		# Expanding the poulation for better random distribution
-		amount = amount * 5
-
-
-	while (filtered_links < amount) and not abort:
-		amount_left = amount - filtered_links
-		# Average items of the right media per page loaded
-		new_per_page = ceil(12 * filtered_links / total_links)
-		if new_per_page == 0:
-			# Avoid division by zero
-			# Number of page load needed
-			new_per_page = 1. / 12. 
-		# Don't go bananas trying to get all of instagram!
-		new_needed = min(int(ceil(amount_left / new_per_page)), 12)
-		for i in range(new_needed):  # add images x * 12
-			# Keep the latest window active while loading more posts
-			before_load = total_links
-			body_elem.send_keys(Keys.END)
-			sleep(1)
-			body_elem.send_keys(Keys.HOME)
-			sleep(1)
-			link_elems = main_elem.find_elements_by_tag_name('a')
-			total_links = len(link_elems)
-			abort = (before_load == total_links)
-			if abort:
-				break
-
-		links = [link_elem.get_attribute('href') for link_elem in link_elems
-				if link_elem.text in media]
-		filtered_links = len(links)
-
-	if is_random:
-		# Shuffle the population index
-		links = random.sample(links, filtered_links)
-
+		links = random.sample(links, len(links))
 	return links[:amount]
 
+
+def update_user_data(browser, username, user_data):
+	# pdb.set_trace()
+	print('Updating data for {}'.format(username))	
+	try: 
+		browser.get('https://www.instagram.com/' + username)
+		sleep(1)
+		main_elem = browser.find_element_by_tag_name('main')
+		link_elems = main_elem.find_elements_by_tag_name('a')
+		if link_elems:
+			followers = int(re.match(r'.*\s',link_elems[0].text).group().strip().replace(',' , ''))
+			following = int(re.match(r'.*\s',link_elems[1].text).group().strip().replace(',' , ''))
+		if username not in user_data.keys():			
+			print('Creating user data entry: followers: {}, following: {}, ratio: {}'.format(followers, following, following/float(followers)))
+			user_data[username] = {'followers': followers, 'following': following, 'ratio': following/float(followers)}
+		else:
+			print('Updating user data entry: followers: {}, following: {}, ratio: {}'.format(followers, following, following/float(followers)))
+			user_data[username]['followers']  = followers
+			user_data[username]['following'] = following
+			user_data[username]['ratio'] = following/float(followers)
+	except BaseException as e:
+		print("Error \n", str(e))
+		raise NoSuchElementException
+
+
+def scroll_bottom(browser, element, range_int):
+	num_elements = 0 
+	for i in range(int(range_int / 2)):        
+		if num_elements != len(browser.find_elements_by_xpath("//div/div/span/button[text()='Following']")) and i != 0:            
+			num_elements = len(browser.find_elements_by_xpath("//div/div/span/button[text()='Following']"))                        
+			browser.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", element)            
+			time.sleep(randint(1,3))
+	return
+
+def get_media_formats(media):
+	result = None
+	if media is None:
+		# All known media types
+		result = ['', 'Post', 'Video']
+	elif media == 'Photo':
+		# Include posts with multiple images in it
+		result = ['', 'Post']
+	else:
+		# Make it an array to use it in the following part
+		result = [media]
+	return result 

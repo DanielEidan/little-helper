@@ -1,10 +1,11 @@
 # Notifications Manager
 import json
+import time
 from random import randint
 from datetime import datetime, timedelta
 from selenium.common.exceptions import NoSuchElementException
 
-from util.like_util import get_links_for_username, like_image
+from util.like_util import get_links, like_image, update_user_data
 
 
 class Notifications(object): 
@@ -12,6 +13,7 @@ class Notifications(object):
 	def __init__(self, browser, username, sleep_interval_lower=25, sleep_interval_upper=35): 
 		self.load_notification_data()
 		self.load_engagement_data()
+		self.load_user_data()
 		self.sleep_interval_lower = sleep_interval_lower
 		self.sleep_interval_upper = sleep_interval_upper 
 		self.browser = browser
@@ -21,6 +23,9 @@ class Notifications(object):
 	def timer(self, sleep_interval_lower=25, sleep_interval_upper=35): 
 	 	while True: 
 			self.notifications()
+			self.save_notification_data()
+			self.save_engagement_data()
+			self.save_user_data()
 			self.sleep()
 
 	def notifications(self):
@@ -35,9 +40,10 @@ class Notifications(object):
 		for user in users:
 			should_engage = self.should_engage(user)
 			if should_engage[0]:
+				update_user_data(self.browser, user, self.user_data)
 				print("Engaging with: {}".format(user))
 				try:
-					links = get_links_for_username(self.browser, user, 1, True)
+					links = get_links(self.browser, user, 4, True, type_flag='user')
 				except NoSuchElementException:
 					print('Element not found, skipping this username')
 				if links: # if the user is private this will be false 
@@ -119,14 +125,14 @@ class Notifications(object):
 		else: 
 			self.notification_tracking[liker_name] = [(notification_type, time)]
 
-	def sleep(self, ):
+	def sleep(self):
 		sleep_time_minutes = randint(self.sleep_interval_lower, self.sleep_interval_upper)
 		print('Sleeping for {}'.format(sleep_time_minutes))
-		time.sleep(60 * sleep_time_min) 
+		time.sleep(60 * sleep_time_minutes) 
 
 	def load_notification_data(self): 
 		try: 	
-			notification_tracking = json.load(open('../data/notification_tracking.txt'))            
+			notification_tracking = json.load(open('../data/notification_tracking.txt'))
 			print("notification_tracking file loaded")
 		except(ValueError, IOError) as e:
 			print("Exception on load: {}".format(e))
@@ -137,12 +143,22 @@ class Notifications(object):
 	def load_engagement_data(self): 
 		try: 
 			engaged_already = json.load(open('../data/engaged_already.txt'))
-			print("engaged_already files Loaded")
+			print("engaged_already file Loaded")
 		except(ValueError, IOError) as e:
 			print("Exception on load: {}".format(e))
 			print("engaged_already files initiated")
 			engaged_already = {}
 		self.engaged_already = engaged_already
+
+	def load_user_data(self):
+		try: 
+			user_data = json.load(open('../data/user_data.txt'))
+			print("user_data file Loaded")
+		except(ValueError, IOError) as e:
+			print("Exception on load: {}".format(e))
+			print("user_data files initiated")
+			user_data = {}
+		self.user_data = user_data
 
 	def save_notification_data(self): 
 		try: 
@@ -155,6 +171,12 @@ class Notifications(object):
 			json.dump(self.engaged_already, open('../data/engaged_already.txt', 'w'))
 		except(Exception) as e:
 			print("Exception saving engaged_already: {}".format(e)) 
+
+	def save_user_data(self): 
+		try: 
+			json.dump(self.user_already, open('../data/user_already.txt', 'w'))
+		except(Exception) as e:
+			print("Exception saving user_already: {}".format(e)) 
 
 # this should be moved out to a utility tool 
 def is_number(s):

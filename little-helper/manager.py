@@ -32,8 +32,8 @@ class Manager(object):
 
 if __name__ == '__main__': 
 
-	username = ''
-	password = ''
+	username = 'with.eden'
+	password = '438queenwest'
 
 	session = Manager(username, password)
 	session.notification_manager()
