@@ -39,13 +39,14 @@ class Notifications(object):
 		print('Managing relations with {} users'.format(len(users)))
 		for user in users:
 			should_engage = self.should_engage(user)
-			if should_engage[0]:
-				update_user_data(self.browser, user, self.user_data)
+			if should_engage[0]:				
 				print("Engaging with: {}".format(user))
 				try:
+					update_user_data(self.browser, user, self.user_data)
 					links = get_links(self.browser, user, 4, True, type_flag='user')
 				except NoSuchElementException:
 					print('Element not found, skipping this username')
+					continue 
 				if links: # if the user is private this will be false 
 					for link in links:
 						print("liking: {}".format(link))
@@ -127,7 +128,7 @@ class Notifications(object):
 
 	def sleep(self):
 		sleep_time_minutes = randint(self.sleep_interval_lower, self.sleep_interval_upper)
-		print('Sleeping for {}'.format(sleep_time_minutes))
+		print('Sleeping for {} starting at {}'.format(sleep_time_minutes, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 		time.sleep(60 * sleep_time_minutes) 
 
 	def load_notification_data(self): 
@@ -174,9 +175,9 @@ class Notifications(object):
 
 	def save_user_data(self): 
 		try: 
-			json.dump(self.user_already, open('../data/user_already.txt', 'w'))
+			json.dump(self.user_data, open('../data/user_data.txt', 'w'))
 		except(Exception) as e:
-			print("Exception saving user_already: {}".format(e)) 
+			print("Exception saving user_data: {}".format(e)) 
 
 # this should be moved out to a utility tool 
 def is_number(s):

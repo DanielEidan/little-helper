@@ -25,7 +25,7 @@ def like_image(browser):
 		print('--> Invalid Like Element!')
 	return liked
 
-def get_links(browser, username=None, amount=3, is_random=False, media=None, skip_top=True, tag=None, type_flag='user'):	
+def get_links(browser, username=None, amount=3, is_random=False, media=None, skip_top=True, tag=None, type_flag='user'):
 	"""Fetches the number of links specified type (type_flag='user'/'tag')
 		by amount and returns a list of links
 		Raises: NoSuchElementException
@@ -43,7 +43,7 @@ def get_links(browser, username=None, amount=3, is_random=False, media=None, ski
 
 	links = []
 	try:
-		if type_flag == 'tag' and skip_top_posts:
+		if type_flag == 'tag' and skip_top:
 			main_elem = browser.find_element_by_xpath('//main/article/div[2]')
 		elif type_flag == 'user':
 			main_elem = browser.find_element_by_tag_name('main')
@@ -70,19 +70,33 @@ def update_user_data(browser, username, user_data):
 		main_elem = browser.find_element_by_tag_name('main')
 		link_elems = main_elem.find_elements_by_tag_name('a')
 		if link_elems:
-			followers = int(re.match(r'.*\s',link_elems[0].text).group().strip().replace(',' , ''))
-			following = int(re.match(r'.*\s',link_elems[1].text).group().strip().replace(',' , ''))
-		if username not in user_data.keys():			
-			print('Creating user data entry: followers: {}, following: {}, ratio: {}'.format(followers, following, following/float(followers)))
-			user_data[username] = {'followers': followers, 'following': following, 'ratio': following/float(followers)}
-		else:
-			print('Updating user data entry: followers: {}, following: {}, ratio: {}'.format(followers, following, following/float(followers)))
-			user_data[username]['followers']  = followers
-			user_data[username]['following'] = following
-			user_data[username]['ratio'] = following/float(followers)
+			followers = format_number(re.match(r'.*\s',link_elems[0].text).group())
+			following = format_number(re.match(r'.*\s',link_elems[1].text).group())
+			if followers and following and username not in user_data.keys():			
+				print('Creating user data entry: followers: {}, following: {}, ratio: {}'.format(followers, following, following/float(followers)))
+				user_data[username] = {'followers': followers, 'following': following, 'ratio': following/float(followers)}
+			elif followers and following:
+				print('Updating user data entry: followers: {}, following: {}, ratio: {}'.format(followers, following, following/float(followers)))
+				user_data[username]['followers']  = followers
+				user_data[username]['following'] = following
+				user_data[username]['ratio'] = following/float(followers)
 	except BaseException as e:
 		print("Error \n", str(e))
 		raise NoSuchElementException
+
+def format_number(number_as_string):
+	number_as_string = number_as_string.strip()
+	number_as_string = number_as_string.replace(',' , '')
+	if number_as_string[-1] == 'k':
+		number_as_string = number_as_string.replace('k', '00').replace('.', '')
+	if number_as_string[-1] == 'm':
+		number_as_string = number_as_string.replace('m', '00000').replace('.', '')
+	try: 
+		return int(number_as_string)
+	except ValueError as e:
+		print("Error parsing number")
+
+
 
 
 def scroll_bottom(browser, element, range_int):

@@ -1,6 +1,7 @@
 # Manager class 
 from browser import Browser
 from notifications import Notifications
+from commenter import Commenter
 from util.login_util import login_user
 
 
@@ -29,11 +30,23 @@ class Manager(object):
 	def notification_manager(self):
 		self.notification_manager = Notifications(self.browser, self.username)
 
+	def commenter(self): 
+		self.commenter = Commenter(self.browser)		
+		tags = ['makeportraits','thecreatorclass','snobshots','creativevagrants']
+		self.commenter.comment_by_tag(tags, 2)
+
 
 if __name__ == '__main__': 
 
-	username = 'with.eden'
-	password = '438queenwest'
+	# These will be removed. 
+	username = ''
+	password = ''
 
+	# Log in with the manager 
 	session = Manager(username, password)
-	session.notification_manager()
+
+	# Run the notification module 
+	session.notification_manager() 
+
+	# Run the Commeter
+	# session.commenter()
