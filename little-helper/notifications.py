@@ -3,7 +3,7 @@ import json
 import time
 from random import randint
 from datetime import datetime, timedelta
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 
 from util.like_util import get_links, like_image, update_user_data
 
@@ -80,11 +80,12 @@ class Notifications(object):
 			users_engagment = self.engaged_already[user]
 		else: 
 			return (True, 'this user has not been engaged with yet')
-		# Sort notifications in place based on time 
 		users_notifications.sort(key=lambda tup: tup[1])
 		users_engagment.sort(key=lambda tup: tup[1])
+		summary = self.relationship_summary(users_engagment, users_notifications)
 		# Rule check 
-		result =  users_engagment[-1][-1] < users_notifications[-1][-1]
+		# result =  users_engagment[-1][-1] < users_notifications[-1][-1]
+		result = summary[-1][0] == 'notification'
 		if result: 
 			return (True, 'this user has engaged with you since your last engagment')
 		else:
@@ -101,6 +102,7 @@ class Notifications(object):
 
 	def parse_notifications(self, notifications):
 		''' Convert time to date format, and update notification tracking'''
+		# I think there is a bug here that causes the same notification to be added many time 
 		for notification_type in ['liked', 'following']:
 			likers_names = [x.split(' ')[0] for x in notifications if notification_type in x]
 			likers_times  = [x.split(' ')[-1] for x in notifications if notification_type in x]
@@ -125,6 +127,33 @@ class Notifications(object):
 			self.notification_tracking[liker_name].append((notification_type, time))
 		else: 
 			self.notification_tracking[liker_name] = [(notification_type, time)]
+
+	def relationship_summary(self, engagments, notifications):
+		""" x_notifications = [ [u'following', u'2017-12-19 12:28:16'], [u'following', u'2017-12-22 12:28:16'], [u'following', u'2017-12-18 12:28:16']]
+			x_engagments = [[u'liked', u'2017-12-20 09:05:19']]
+			Results in [['notification', 2], ['engagment', 1], ['notification', 1]]
+			The purpose of this function is to show the summary of the combined interactions
+		"""
+		engagments.sort(key=lambda list:list[1])
+		engagments = [['engagment', e] for e in engagments]
+		notifications.sort(key=lambda list:list[1])
+		notifications = [['notification', n] for n in notifications]
+		flattened = engagments + notifications
+		flattened.sort(key=lambda list: list[1][1])
+		summary = []
+		for i in range(len(flattened)): 
+			element = flattened[i]
+			if len(summary) == 0: 
+				entry = [element[0], 1]
+				summary.append(entry)
+			else:
+				if element[0] == summary[-1][0]:
+					summary[-1][1] = summary[-1][1] + 1
+				else:
+					entry = [element[0], 1]
+					summary.append(entry)
+		print(summary)
+		return summary
 
 	def sleep(self):
 		sleep_time_minutes = randint(self.sleep_interval_lower, self.sleep_interval_upper)

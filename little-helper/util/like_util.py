@@ -26,7 +26,7 @@ def like_image(browser):
 	return liked
 
 def get_links(browser, username=None, amount=3, is_random=False, media=None, skip_top=True, tag=None, type_flag='user'):
-	"""Fetches the number of links specified type (type_flag='user'/'tag')
+	""" Fetches the number of links specified type (type_flag='user'/'tag')
 		by amount and returns a list of links
 		Raises: NoSuchElementException
 	"""
@@ -36,7 +36,11 @@ def get_links(browser, username=None, amount=3, is_random=False, media=None, ski
 		browser.get('https://www.instagram.com/' + username)
 	elif type_flag == 'tag':
 		print('Attempting to get image for TAG {}/'.format(tag))		
-		browser.get('https://www.instagram.com/explore/tags/' + (tag[1:] if tag[:1] == '#' else tag))		
+		browser.get('https://www.instagram.com/explore/tags/' + (tag[1:] if tag[:1] == '#' else tag))
+		sleep(2)
+		for i in range(3):
+			browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+			sleep(2)
 	sleep(2)
 	body_elem = browser.find_element_by_tag_name('body')
 	sleep(2)
