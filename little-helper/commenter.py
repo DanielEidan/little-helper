@@ -53,6 +53,9 @@ class Commenter(object):
 					comment_input = self.get_comment_input()
 					time.sleep(2)
 					comment_input[0].submit()
+
+					# like the image you just commented on
+					like_image(self.browser)
 				except StaleElementReferenceException as e: 
 					print('Exception on comment: {}'.format(e))
 			else:
@@ -70,51 +73,56 @@ class Commenter(object):
 		return self.username in all_comments.text
 
 	def get_comment_text(self, attributes):
-		comment = '' 
-		if ('people' or 'person')in attributes:
-			if 'man' in attributes:
-				if 'portrait' in attributes: 
-					comment = random.choice(['beautiful portrait', 'nice portrait', 'intimate portrait'])
-				elif 'fashion' in attributes: 
-					comment = random.choice(['great look', 'love the fit', 'stylish', 'great fit', 'sharp look', 'fashion goals'])
-				elif 'model' in attributes: 
-					comment = random.choice(['looking good', 'beautiful', 'great look', 'goals'])
-				else: 
-					comment = random.choice(['good stuff man', 'looking good man'])
+		comment = 'nice'
+		# generic attributes
+		if ('fashion' or 'model') in attributes: 			
+			if ('woman' or 'girl') in attributes:
+				comment = random.choice(['babe', "you're stunning", 'stunning', 'gorgeous', 'wow, so beautiful', 'great look babe', 'love the fit', 'so stylish', 'wow, what a great fit', 'sharp look', 'fashion goals', 'great outfit'])
+			elif 'man' in attributes: 
+				comment = random.choice(['great look', 'love the fit', 'stylish', 'great fit', 'sharp look', 'fashion goals', 'looking good', 'beautiful', 'great look', 'goals'])
+		if 'portrait' in attributes:
+			if ('woman' or 'girl') in attributes:
+				comment = random.choice(['beautiful portrait', 'nice portrait', 'intimate portrait', 'stunning portrait', 'intimate and beautiful', 'beautiful and intimate'])
+			elif 'man' in attributes: 
+				comment = random.choice(['beautiful portrait', 'nice portrait', 'portrait on point'])
 
-			elif ('woman' or 'girl') in attributes:
-				if 'portrait' in attributes: 
-					comment = random.choice(['beautiful portrait', 'nice portrait', 'intimate portrait', 'stunning portrait', 'intimate and beautiful', 'beautiful and intimate'])
-				elif 'fashion' in attributes: 
-					comment = random.choice(['great look babe', 'love the fit', 'so stylish', 'wow, what a great fit', 'sharp look', 'fashion goals', 'sexy outfit'])
-				elif 'model' in attributes: 
-					comment = random.choice(['babe', "you're stunning", 'stunning', 'gorgeous', 'wow, so beautiful'])
-				else: 
-					comment = random.choice(['good stuff girl', 'looking great girl'])
+		# specific attributes, that will override generic ones
+		if 'monochrome' in attributes:
+			comment = random.choice(['love the black and white'])
+		if ('vehicle' or 'car' or 'transportation system') in attributes:
+			comment = random.choice(['nice ride', 'nice whip', 'dope ride', 'nice wheels'])
+		if ('building' or 'architecture') in attributes:
+			comment = random.choice(['beautiful architecture', 'nice lines', 'nice building', 'great lines'])
+		if ('winter' or 'snow') in attributes: 
+			comment = random.choice(['winter magic', 'beautiful snow', 'winter wonderland'])
+		if ('winter' or 'snow') in attributes: 
+			comment = random.choice(['snow', 'snow white', 'love the winter vibes'])
+		if ('sneakers' or 'foot' or 'shoe' or 'footwear') in attributes:
+			comment = random.choice(['nice kick', 'dope cop', 'kicks on fire', 'fire kicks', 'save me a pair'])
+		if ('sexy' or 'nude') in attributes:
+			comment = random.choice(['so sexy', 'sexy', 'damn', 'hot', 'omg, wow', 'sexy look'])
+		if ('child') in attributes:
+			comment = random.choice(['so cute', 'adorable', 'precious', 'awwww...'])
+		if ('street' or 'city') in attributes:
+			comment = random.choice(['urban vibes', 'street style', 'urban grind', 'urban streets'])
+		if 'travel' in attributes: 
+			comment = random.choice(['wanderlust', 'destination goals', 'I want to be there!'])
+		if 'sky' in attributes:
+			comment = random.choice(['beautiful sky', 'that sky view though'])
+		if 'water' in attributes:
+			comment = random.choice(['that water', 'I want to jump right in'])
+		if ('landscape' or 'outdoors' or 'adventure' or 'travel', 'nature') in attributes:
+			comment = random.choice(['that view', 'view goals', 'keep exploring', 'look at that view'])
+		if ('watch' or 'clock') in attributes: 
+			comment = random.choice(['nice piece', 'keep that time'])			
+		if ('aerial') in attributes: 
+			comment = random.choice(['flying high', 'great perspective'])		
+		if ('food') in attributes: 
+			comment = random.choice(['delicious', 'yum'])
 
-			elif 'child' in attributes: 
-				comment = random.choice(['so cute', 'adorable', 'precious'])
-			else: 
-				comment = random.choice(['looking good'])
-		elif 'no person' in attributes:
-			if 'footwear' or 'foot' or 'shoe' in attributes:
-				comment = random.choice(['nice kick', 'dope cop', 'kicks on fire', 'fire kicks', 'save me a pair'])
-			elif ('street' or 'city') in attributes:
-				comment = random.choice(['urban vibes', 'street style', 'urban grind', 'urban streets'])
-			elif 'travel' in attributes: 
-				comment = random.choice(['wanderlust', 'destination goals', 'I want to be there!'])
-			elif 'sky' in attributes:
-				comment = random.choice(['beautiful sky', 'that sky view though'])
-			elif 'water' in attributes:
-				comment = random.choice(['that water', 'I want to jump right in'])
-			elif 'landscape' or 'outdoors' in attributes:
-				comment = random.choice(['that view', 'view goals', 'keep exploriong', 'look at that view'])
-		else: 
-			comment = random.choice(['good stuff', 'nice', 'beautiful', 'amazing', 'dope', 'great stuff', 'love it!' ])
 		emoji_icon = random.choice([':smile:', ':laughing:', ':blush:', ':smiley:', ':relaxed:', ':kissing_closed_eyes:', ':flushed:', ':relieved:', ':satisfied:', ':grin:', ':wink:', ':stuck_out_tongue_winking_eye:', ':stuck_out_tongue_closed_eyes:', ':grinning:', ':kissing:', ':kissing_smiling_eyes:', ':stuck_out_tongue:', ':sunglasses:', ':fire:', ':thumbsup:', ':ok_hand:', ':wave:', ':raised_hands:', ':pray:', ':clap:', ':100:', ':heavy_check_mark:', ':bangbang:', ':heavy_exclamation_mark:'])
 		comment = emoji.emojize('{}{}'.format(comment, emoji_icon), use_aliases=True)
-		return comment 
-
+		return comment
 
 	def open_comment_section(self):
 		missing_comment_elem_warning = (

@@ -4,8 +4,8 @@ import time
 from random import randint
 from datetime import datetime, timedelta
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
-
 from util.like_util import get_links, like_image, update_user_data
+import pdb 
 
 
 class Notifications(object): 
@@ -43,7 +43,7 @@ class Notifications(object):
 				print("Engaging with: {}".format(user))
 				try:
 					update_user_data(self.browser, user, self.user_data)
-					links = get_links(self.browser, user, 4, True, type_flag='user')
+					links = get_links(self.browser, user, randint(3, 5), True, type_flag='user')
 				except NoSuchElementException:
 					print('Element not found, skipping this username')
 					continue 
@@ -51,7 +51,7 @@ class Notifications(object):
 					for link in links:
 						print("liking: {}".format(link))
 						self.browser.get(link)
-						liked = like_image(self.browser)                                                
+						liked = like_image(self.browser)
 						engagment = ('liked', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 						self.add_engagment(user, engagment)
 				else: 
@@ -106,6 +106,7 @@ class Notifications(object):
 		for notification_type in ['liked', 'following']:
 			likers_names = [x.split(' ')[0] for x in notifications if notification_type in x]
 			likers_times  = [x.split(' ')[-1] for x in notifications if notification_type in x]
+			# pdb.set_trace()
 			for i in range(len(likers_names)):
 				liker_name = likers_names[i]
 				liker_time = likers_times[i]
@@ -119,6 +120,8 @@ class Notifications(object):
 						minutes = liker_time[-2].encode('utf-8')
 					minutes = int(minutes)
 					time = (datetime.now() - timedelta(minutes = minutes)).strftime('%Y-%m-%d %H:%M:%S')
+				# pdb.set_trace()
+				print('Adding action: {} {} {}'.format(liker_name, notification_type, time))
 				self.add_action(time, liker_name, notification_type)
 
 	def add_action(self, time, liker_name, notification_type):
@@ -152,7 +155,6 @@ class Notifications(object):
 				else:
 					entry = [element[0], 1]
 					summary.append(entry)
-		print(summary)
 		return summary
 
 	def sleep(self):

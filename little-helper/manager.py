@@ -38,8 +38,8 @@ class Manager(object):
 if __name__ == '__main__': 
 
 	# These will be removed. 
-	username = 'with.eden'
-	password = '438queenwest'
+	username = ''
+	password = ''
 
 	# Log in with the manager 
 	session = Manager(username, password)
@@ -51,21 +51,21 @@ if __name__ == '__main__':
 	tags = ['snobshots','makeportraits','thecreatorclass','creativevagrants','agameoftones',
 	'moodygrams','fatalframes','theimaged','urbangathering','way2ill','illgrammers','vsco','streetdreamsmag',
 	'visualsgang','dailyfeatures','exploretocreate','theoutbound','createexplore','ig_color','ig_masterpiece',
-	'superhubs','visualcreators','instagood','thecreatorclass','artofvisuals','aov','thecreatorclass','createcommune',
+	'superhubs','visualcreators','thecreatorclass','artofvisuals','aov','thecreatorclass','createcommune',
 	'bnw_sniper','jointheclass','exploreeverything','visualarchitects','hsdailyfeature','hbouthere',
 	'createexploretakeover','monochrome','explorecanada','hypebeast','liveauthentic','blackandwhite','makeadventure',
 	'rsa_streetview','bnw','streetsoftoronto','lovetoronto','mobilemag','blackandwhiteisworththefight','fashion',
 	'magazine','session','modeling','model','foto','models ','photographers','californialove','editorialphotography',
 	'fashionphotographer','fashiondiaries','nextdoormodelmagazine','hamburg','male','lifestyle','ig_minimalist',
 	'ig_minimalshots ','vscomood','igmasters','shotaward','lifestyleblogger','minimalism','minimal_perfection',
-	'vscoaward','featuremeinstagood ','rsa_minimal ','ignant','exklusive_shot','naturallight','artnude','nudemodel',
+	'vscoaward','rsa_minimal ','ignant','exklusive_shot','naturallight','artnude','nudemodel',
 	'tatooedmodel','girlswithtattoos','feminist','portrait','portraitmood','peoplescreatives','portraitphotography ',
 	'toronto','torontomodel','internationalmodel','photooftheday','bestoftheday','beauty','makeupaddict','portraitpros',
 	'seamyphotos','antmisback','wlyg','torontophotographer','photographer','fit','fitnessmodel','studiosessions',
 	'lingire','fashionista','fashionblogger','fashionblog','fashionstyle','fashionlover','fashioninsta','fashiondaily',
 	'fashionaddict','fblogger','ootd','outfitoftheday','outfitinspiration','outfitpost','style','styleoftheday',
 	'styleinspiration','styletips','stylefile','styledbyme','lookbook','streetstyle','shopaholic','streetstyleluxe',
-	'instafashion','nakidmagazine','featuremeofh','instagoodmyphoto','portraitpage','portraits_ig ','lookslikefilm ',
+	'instafashion','nakidmagazine','portraitpage','portraits_ig ','lookslikefilm ',
 	'expofilm','photographyislife','postmoreportraits','picoftheday','featuremebest','vsco ','vscostyle','vscoportrait',
 	'folkcreative','hinfluencercollective','socality','visualauthority','discoverportrait','fashionphotography ','ftwotw',
 	'pursuitofportraits','bleachmyfilm','portraitcollective ','featurepalette','postthepeople','photographyislife',
