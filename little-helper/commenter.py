@@ -4,6 +4,7 @@
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from util.like_util import get_links, like_image, update_user_data
 from util.clarifai_util import check_image
+from random import randint
 import time
 import emoji
 import random
@@ -16,7 +17,7 @@ class Commenter(object):
 		self.browser = browser
 		self.username = username
 		
-	def comment_by_tag(self, tags, amount):		
+	def comment_by_tag(self, tags, amount, engage_user=False):		
 		commented = 0
 		tags = list(map(str.strip, tags))
 		for index, tag in enumerate(tags, 1):
@@ -29,6 +30,11 @@ class Commenter(object):
 					success, attributes = check_image(self.browser)
 					if success:
 						self.comment(attributes)
+						if engage_user:
+							self.browser.find_element_by_class_name('_2g7d5').click()							
+							username = self.browser.current_url.split('/')[-2] 
+							self.engage_with_user(username)						
+						# Add an option here of engaging further with the user. 
 			except NoSuchElementException:
 				print('Cant get images for tag [{}/{} - {}]'.format(index, len(tags), tag.encode('utf-8')))
 				continue
@@ -124,6 +130,21 @@ class Commenter(object):
 		comment = emoji.emojize('{}{}'.format(comment, emoji_icon), use_aliases=True)
 		return comment
 
+
+	def engage_with_user(self, user): 
+		try:					
+			links = get_links(self.browser, user, randint(3, 5), True, type_flag='user')
+		except NoSuchElementException:
+			print('Element not found, skipping {}'.fomat(user))
+		if links: # if the user is private this will be false 
+			for link in links:
+				print("liking: {}".format(link))
+				self.browser.get(link)
+				liked = like_image(self.browser)
+		else: 		
+			print("Not engaging with: {} because they are private".format(user))
+
+
 	def open_comment_section(self):
 		missing_comment_elem_warning = (
 			'--> Warning: Comment Button Not Found:'
@@ -137,30 +158,8 @@ class Commenter(object):
 		else:
 			print(missing_comment_elem_warning)
 
-
 	def get_comment_input(self):
 		comment_input = self.browser.find_elements_by_xpath('//textarea[@placeholder = "Add a comment…"]')
 		if len(comment_input) <= 0:
 			comment_input = self.browser.find_elements_by_xpath('//input[@placeholder = "Add a comment…"]')
 		return comment_input
-
-
-		# 'people', 'man', 'portriat'
-		# 'people', 'man', 'fashion'
-		# 'people', 'man', 'model'
-		# 'people', 'girl', 'portriat'
-		# 'people', 'woman', 'portriat'
-		# 'people', 'girl', 'fashion'
-		# 'people', 'woman', 'fashion'
-		# 'people', 'girl', 'model'
-		# 'people', 'woman', 'model'
-		# 'people', 'child'
-		# 'no people', 'footwear'
-		# 'no people', 'foot'
-		# 'no people', 'shoe'
-		# 'no people', 'street'
-		# 'no people', 'city'
-		# 'no people', 'travel', 'outdoors'
-		# 'no people', 'travel', 'sky'
-		# 'no people', 'travel', 'landscape'
-		# 'no people', 'travel', 'water'
