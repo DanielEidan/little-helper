@@ -38,8 +38,8 @@ class Manager(object):
 if __name__ == '__main__': 
 
 	# These will be removed. 
-	username = ''
-	password = ''
+	username = 'with.eden'
+	password = '438queenwest'
 
 	# Log in with the manager 
 	session = Manager(username, password)
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 	'sneakerheads','solecollector','soleonfire','nicekicks','igsneakercommunity','sneakerfreak','sneakerporn','sneakerfiend',
 	'sneakershouts','kicksonfire','fresh','walklikeus','nike','sneakerholics','sneakerfiend','shoegasm','kickstagram',
 	'jordan','nikeair','adidas','queenwest']
-	session.commenter(tags)
+	# session.commenter(tags)
 
 	# Run the notification module 
 	session.notification_manager() 
