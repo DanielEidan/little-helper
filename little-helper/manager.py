@@ -44,9 +44,6 @@ if __name__ == '__main__':
 	# Log in with the manager 
 	session = Manager(username, password)
 
-	# Run the notification module 
-	# session.notification_manager() 
-
 	# Run the Commeter
 	tags = ['snobshots','makeportraits','thecreatorclass','creativevagrants','agameoftones',
 	'moodygrams','fatalframes','theimaged','urbangathering','way2ill','illgrammers','vsco','streetdreamsmag',
@@ -74,3 +71,6 @@ if __name__ == '__main__':
 	'sneakershouts','kicksonfire','fresh','walklikeus','nike','sneakerholics','sneakerfiend','shoegasm','kickstagram',
 	'jordan','nikeair','adidas','queenwest']
 	session.commenter(tags)
+
+	# Run the notification module 
+	session.notification_manager() 

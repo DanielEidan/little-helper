@@ -92,6 +92,7 @@ class Notifications(object):
 			return (False, 'this user has not engaged with you since your last engagment')
 
 	def get_notifications(self):
+		# pdb.set_trace()
 		try:
 			button = self.browser.find_element_by_xpath("//nav/div[2]/div/div/div[3]/div/div[2]")
 		except NoSuchElementException:

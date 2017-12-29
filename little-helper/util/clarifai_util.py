@@ -42,23 +42,3 @@ def get_imagelink(browser):
 	return browser.find_element_by_xpath('//img[@class = "_2di5p"]') \
 		.get_attribute('src')
 
-# 'people', 'man', 'portriat'
-# 'people', 'man', 'fashion'
-# 'people', 'man', 'model'
-# 'people', 'girl', 'portriat'
-# 'people', 'woman', 'portriat'
-# 'people', 'girl', 'fashion'
-# 'people', 'woman', 'fashion'
-# 'people', 'girl', 'model'
-# 'people', 'woman', 'model'
-# 'people', 'child'
-# 'no people', 'footwear'
-# 'no people', 'foot'
-# 'no people', 'shoe'
-# 'no people', 'street'
-# 'no people', 'city'
-# 'no people', 'travel', 'outdoors'
-# 'no people', 'travel', 'sky'
-# 'no people', 'travel', 'landscape'
-# 'no people', 'travel', 'water'
-

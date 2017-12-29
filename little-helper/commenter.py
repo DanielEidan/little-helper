@@ -116,7 +116,7 @@ class Commenter(object):
 		if 'sky' in attributes:
 			comment = random.choice(['beautiful sky', 'that sky view though'])
 		if 'water' in attributes:
-			comment = random.choice(['that water', 'I want to jump right in'])
+			comment = random.choice(['that water', 'I want to jump right in', 'love the water', 'beautiful water'])
 		if ('landscape' or 'outdoors' or 'adventure' or 'travel', 'nature') in attributes:
 			comment = random.choice(['that view', 'view goals', 'keep exploring', 'look at that view'])
 		if ('watch' or 'clock') in attributes: 
