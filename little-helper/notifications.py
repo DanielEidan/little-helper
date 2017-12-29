@@ -29,6 +29,7 @@ class Notifications(object):
 			self.sleep()
 
 	def notifications(self):
+		pdb.set_trace()		
 		self.browser.get('https://www.instagram.com/' + self.username)
 		all_notifications = self.get_notifications()
 		self.parse_notifications(all_notifications)
@@ -92,44 +93,44 @@ class Notifications(object):
 			return (False, 'this user has not engaged with you since your last engagment')
 
 	def get_notifications(self):
+		# pdb.set_trace()
 		try:
 			button = self.browser.find_element_by_xpath("//nav/div[2]/div/div/div[3]/div/div[2]")
 		except NoSuchElementException:
 			raise RuntimeWarning('There are no notifications')
 		button.click()     
-		all_notifications = self.browser.find_element_by_xpath("//nav/div[2]/div/div/div[3]/div/div[2]/div/div/div[4]/ul").text
-		return all_notifications.split('\n')    	
+		# all_notifications = self.browser.find_element_by_xpath("//nav/div[2]/div/div/div[3]/div/div[2]/div/div/div[4]/ul").text
+		all_notifications = self.browser.find_elements_by_class_name('_75ljm')
+		return all_notifications
 
 	def parse_notifications(self, notifications):
-		''' Convert time to date format, and update notification tracking'''
-		# I think there is a bug here that causes the same notification to be added many time 
-		for notification_type in ['liked', 'following']:
-			likers_names = [x.split(' ')[0] for x in notifications if notification_type in x]
-			likers_times  = [x.split(' ')[-1] for x in notifications if notification_type in x]
-			# pdb.set_trace()
-			for i in range(len(likers_names)):
-				liker_name = likers_names[i]
-				liker_time = likers_times[i]
-				if liker_time[-1]== 'h':
-					hours = int(liker_time[-2].encode('utf-8')) # not sure if I need this encode 
-					time = (datetime.now() - timedelta(hours = hours)).strftime('%Y-%m-%d %H:%M:%S')
-				else:
-					if is_number(liker_time[-3]):
-						minutes = liker_time[-3:-1].encode('utf-8')
-					else:
-						minutes = liker_time[-2].encode('utf-8')
-					minutes = int(minutes)
-					time = (datetime.now() - timedelta(minutes = minutes)).strftime('%Y-%m-%d %H:%M:%S')
-				# pdb.set_trace()
-				print('Adding action: {} {} {}'.format(liker_name, notification_type, time))
-				self.add_action(time, liker_name, notification_type)
+		for i in range(len(notifications)):
+			notification = notifications[i]
+			username = notification.find_element_by_class_name('_2g7d5').text
+			raw_action = notification.find_element_by_class_name('_b96u5').text
+			if 'like' in raw_action:
+				action = 'like'
+			elif 'comment' in raw_action:
+				action = 'comment'
+			elif 'follow' in raw_action:
+				action = 'follow'
+			raw_time = notification.find_element_by_class_name('_3lema').get_attribute('datetime')
+			time = raw_time.split('T')[0] + ' ' + raw_time.split('T')[1][:-1]
+			if username and action and time:
+				self.add_action(time, username, action)
+				# I want to do this here but because it changes the DOM it fucks up
+				# update_user_data(self.browser, username, self.user_data)
 
 	def add_action(self, time, liker_name, notification_type):
 		''' update notification tracking'''
+		action_tuple = (notification_type, time)
 		if liker_name in self.notification_tracking.keys():
-			self.notification_tracking[liker_name].append((notification_type, time))
+			if action_tuple not in self.notification_tracking[liker_name]:
+				self.notification_tracking[liker_name].append((notification_type, time))
+				print('Adding action for existing user: {} {}'.format(liker_name, action_tuple))				
 		else: 
-			self.notification_tracking[liker_name] = [(notification_type, time)]
+			self.notification_tracking[liker_name] = [action_tuple]
+			print('Adding user: {} with action {}'.format(liker_name, action_tuple))
 
 	def relationship_summary(self, engagments, notifications):
 		""" x_notifications = [ [u'following', u'2017-12-19 12:28:16'], [u'following', u'2017-12-22 12:28:16'], [u'following', u'2017-12-18 12:28:16']]
@@ -209,12 +210,3 @@ class Notifications(object):
 			json.dump(self.user_data, open('../data/user_data.txt', 'w'))
 		except(Exception) as e:
 			print("Exception saving user_data: {}".format(e)) 
-
-# this should be moved out to a utility tool 
-def is_number(s):
-	try:
-		float(s)
-		return True
-	except ValueError:
-		pass
-	return False 

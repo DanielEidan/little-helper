@@ -84,6 +84,7 @@ def update_user_data(browser, username, user_data):
 				user_data[username]['followers']  = followers
 				user_data[username]['following'] = following
 				user_data[username]['ratio'] = following/float(followers)
+				# TODO: Add a time stamp of last engagment. Then We can iterate through the users based on the last engagment time. 
 	except BaseException as e:
 		print("Error \n", str(e))
 		raise NoSuchElementException
