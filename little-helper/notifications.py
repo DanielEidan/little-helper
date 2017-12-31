@@ -4,7 +4,7 @@ import time
 from random import randint
 from datetime import datetime, timedelta
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
-from util.like_util import get_links, like_image, update_user_data
+from util.like_util import get_links, like_image, update_user_data, update_user_data_timestamp
 import pdb 
 
 
@@ -29,7 +29,6 @@ class Notifications(object):
 			self.sleep()
 
 	def notifications(self):
-		pdb.set_trace()		
 		self.browser.get('https://www.instagram.com/' + self.username)
 		all_notifications = self.get_notifications()
 		self.parse_notifications(all_notifications)
@@ -39,8 +38,8 @@ class Notifications(object):
 		users = self.notification_tracking.keys()
 		print('Managing relations with {} users'.format(len(users)))
 		for user in users:
-			should_engage = self.should_engage(user)
-			if should_engage[0]:				
+			should_engage = self.should_engage(user)			
+			if should_engage[0]:		
 				print("Engaging with: {}".format(user))
 				try:
 					update_user_data(self.browser, user, self.user_data)
@@ -50,13 +49,13 @@ class Notifications(object):
 					continue 
 				if links: # if the user is private this will be false 
 					for link in links:
-						print("liking: {}".format(link))
 						self.browser.get(link)
 						liked = like_image(self.browser)
-						engagment = ('liked', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+						print("liking: {}".format(link))
+						engagment = ('liked', datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))
 						self.add_engagment(user, engagment)
 				else: 
-					engagment = ('User is private', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+					engagment = ('User is private', datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))
 					self.add_engagment(user, engagment)
 					print("Not engaging with: {} because they are private".format(user))
 			else:
@@ -88,12 +87,12 @@ class Notifications(object):
 		# result =  users_engagment[-1][-1] < users_notifications[-1][-1]
 		result = summary[-1][0] == 'notification'
 		if result: 
+			# pdb.set_trace()
 			return (True, 'this user has engaged with you since your last engagment')
 		else:
 			return (False, 'this user has not engaged with you since your last engagment')
 
 	def get_notifications(self):
-		# pdb.set_trace()
 		try:
 			button = self.browser.find_element_by_xpath("//nav/div[2]/div/div/div[3]/div/div[2]")
 		except NoSuchElementException:
@@ -118,19 +117,18 @@ class Notifications(object):
 			time = raw_time.split('T')[0] + ' ' + raw_time.split('T')[1][:-1]
 			if username and action and time:
 				self.add_action(time, username, action)
-				# I want to do this here but because it changes the DOM it fucks up
-				# update_user_data(self.browser, username, self.user_data)
+				update_user_data_timestamp(username, self.user_data)
 
 	def add_action(self, time, liker_name, notification_type):
 		''' update notification tracking'''
-		action_tuple = (notification_type, time)
+		action = [notification_type, time]
 		if liker_name in self.notification_tracking.keys():
-			if action_tuple not in self.notification_tracking[liker_name]:
+			if action not in self.notification_tracking[liker_name]:
 				self.notification_tracking[liker_name].append((notification_type, time))
-				print('Adding action for existing user: {} {}'.format(liker_name, action_tuple))				
+				print('Adding action for existing user: {} {}'.format(liker_name, action))
 		else: 
-			self.notification_tracking[liker_name] = [action_tuple]
-			print('Adding user: {} with action {}'.format(liker_name, action_tuple))
+			self.notification_tracking[liker_name] = [action]
+			print('Adding user: {} with action {}'.format(liker_name, action))
 
 	def relationship_summary(self, engagments, notifications):
 		""" x_notifications = [ [u'following', u'2017-12-19 12:28:16'], [u'following', u'2017-12-22 12:28:16'], [u'following', u'2017-12-18 12:28:16']]
@@ -159,7 +157,8 @@ class Notifications(object):
 		return summary
 
 	def sleep(self):
-		sleep_time_minutes = randint(self.sleep_interval_lower, self.sleep_interval_upper)
+		# sleep_time_minutes = randint(self.sleep_interval_lower, self.sleep_interval_upper)
+		sleep_time_minutes = randint(2, 5)
 		print('Sleeping for {} starting at {}'.format(sleep_time_minutes, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 		time.sleep(60 * sleep_time_minutes) 
 
@@ -196,17 +195,20 @@ class Notifications(object):
 	def save_notification_data(self): 
 		try: 
 			json.dump(self.notification_tracking, open('../data/notification_tracking.txt', 'w'))
+			print("notification_tracking file saved")
 		except(Exception) as e:
 			print("Exception saving notification_tracking: {}".format(e)) 
 
 	def save_engagement_data(self): 
 		try: 
 			json.dump(self.engaged_already, open('../data/engaged_already.txt', 'w'))
+			print("engaged_already file saved")
 		except(Exception) as e:
 			print("Exception saving engaged_already: {}".format(e)) 
 
 	def save_user_data(self): 
 		try: 
 			json.dump(self.user_data, open('../data/user_data.txt', 'w'))
+			print("user_data file saved")
 		except(Exception) as e:
 			print("Exception saving user_data: {}".format(e)) 

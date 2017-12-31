@@ -1,7 +1,8 @@
 # like_util
 import random
 from math import ceil
-from .time_util import sleep
+from .time_util import sleep 
+from datetime import datetime, timedelta
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 import pdb 
@@ -77,10 +78,10 @@ def update_user_data(browser, username, user_data):
 			followers = format_number(re.match(r'.*\s',link_elems[0].text).group())
 			following = format_number(re.match(r'.*\s',link_elems[1].text).group())
 			if followers and following and username not in user_data.keys():			
-				print('Creating user data entry: followers: {}, following: {}, ratio: {}'.format(followers, following, following/float(followers)))
-				user_data[username] = {'followers': followers, 'following': following, 'ratio': following/float(followers)}
+				print('Creating user data entry for {}: followers: {}, following: {}, ratio: {}, last_notification {}'.format(username, followers, following, following/float(followers), None))
+				user_data[username] = {'followers': followers, 'following': following, 'ratio': following/float(followers), 'last_notification': None}
 			elif followers and following:
-				print('Updating user data entry: followers: {}, following: {}, ratio: {}'.format(followers, following, following/float(followers)))
+				print('Updating user data entry for {}: followers: {}, following: {}, ratio: {}'.format(username, followers, following, following/float(followers)))
 				user_data[username]['followers']  = followers
 				user_data[username]['following'] = following
 				user_data[username]['ratio'] = following/float(followers)
@@ -88,6 +89,14 @@ def update_user_data(browser, username, user_data):
 	except BaseException as e:
 		print("Error \n", str(e))
 		raise NoSuchElementException
+
+def update_user_data_timestamp(username, user_data):
+	if username not in user_data.keys():
+		user_data[username] = {'followers': None, 'following': None, 'ratio': None, 'last_notification': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}
+		print('Creating user data entry for {}: followers: {}, following: {}, ratio: {}, last_notification {}'.format(username, None, None, None, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')))
+	else:
+		user_data[username]['last_notification'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+		print('Updating user data notification timestamp for {} as: {}'.format(username, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')))
 
 def format_number(number_as_string):
 	number_as_string = number_as_string.strip()
