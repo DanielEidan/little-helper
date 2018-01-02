@@ -38,10 +38,11 @@ class Notifications(object):
 		sorted_users = sorted(self.user_data.items(), key=lambda y: (y[1]['last_notification']), reverse=True)
 		print('Managing relations with {} users'.format(len(sorted_users)))
 		time.sleep(2)
+		number_engaged = 0 
 		for entry in sorted_users:
 			user = entry[0]
 			should_engage = self.should_engage(user)			
-			if should_engage[0]:		
+			if should_engage[0]:				
 				print("Engaging with: {}".format(user))
 				try:
 					update_user_data(self.browser, user, self.user_data)
@@ -50,18 +51,20 @@ class Notifications(object):
 					print('Element not found, skipping this username')
 					continue 
 				if links: # if the user is private this will be false 
+					number_engaged += 1
 					for link in links:
 						self.browser.get(link)
 						liked = like_image(self.browser)
 						print("liking: {}".format(link))
 						engagment = ('liked', datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))
 						self.add_engagment(user, engagment)
-				else: 
+				else:
 					engagment = ('User is private', datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))
 					self.add_engagment(user, engagment)
 					print("Not engaging with: {} because they are private".format(user))
 			else:
 				print("Not engaging with: {} because {}".format(user, should_engage[1]))
+		print("Engaged with {} out of {}".format(number_engaged, len(sorted_users)))
 
 	def add_engagment(self, user, engagment):
 		if user in self.engaged_already.keys():
@@ -118,19 +121,25 @@ class Notifications(object):
 			raw_time = notification.find_element_by_class_name('_3lema').get_attribute('datetime')
 			time = raw_time.split('T')[0] + ' ' + raw_time.split('T')[1][:-1]
 			if username and action and time:
-				self.add_action(time, username, action)
-				update_user_data_timestamp(username, self.user_data)
+				if self.add_action(time, username, action):
+					update_user_data_timestamp(username, self.user_data)
 
 	def add_action(self, time, liker_name, notification_type):
-		''' update notification tracking'''
+		''' update notification tracking
+			return true if the user object is updated, false otherwise
+		'''
 		action = [notification_type, time]
+		got_added = True
 		if liker_name in self.notification_tracking.keys():
 			if action not in self.notification_tracking[liker_name]:
 				self.notification_tracking[liker_name].append((notification_type, time))
 				print('Adding action for existing user: {} {}'.format(liker_name, action))
+			else: 
+				got_added = False
 		else: 
 			self.notification_tracking[liker_name] = [action]
 			print('Adding user: {} with action {}'.format(liker_name, action))
+		return got_added
 
 	def relationship_summary(self, engagments, notifications):
 		""" x_notifications = [ [u'following', u'2017-12-19 12:28:16'], [u'following', u'2017-12-22 12:28:16'], [u'following', u'2017-12-18 12:28:16']]
