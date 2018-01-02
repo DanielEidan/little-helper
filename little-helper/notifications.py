@@ -10,7 +10,7 @@ import pdb
 
 class Notifications(object): 
 
-	def __init__(self, browser, username, sleep_interval_lower=25, sleep_interval_upper=35): 
+	def __init__(self, browser, username, sleep_interval_lower=10, sleep_interval_upper=20): 
 		self.load_notification_data()
 		self.load_engagement_data()
 		self.load_user_data()
@@ -28,16 +28,18 @@ class Notifications(object):
 			self.save_user_data()
 			self.sleep()
 
-	def notifications(self):
-		self.browser.get('https://www.instagram.com/' + self.username)
+	def notifications(self):		
 		all_notifications = self.get_notifications()
-		self.parse_notifications(all_notifications)
+		self.parse_notifications(all_notifications)				
 		self.act_on_notifications()
 
 	def act_on_notifications(self):
-		users = self.notification_tracking.keys()
-		print('Managing relations with {} users'.format(len(users)))
-		for user in users:
+		# users = self.notification_tracking.keys()
+		sorted_users = sorted(self.user_data.items(), key=lambda y: (y[1]['last_notification']), reverse=True)
+		print('Managing relations with {} users'.format(len(sorted_users)))
+		time.sleep(2)
+		for entry in sorted_users:
+			user = entry[0]
 			should_engage = self.should_engage(user)			
 			if should_engage[0]:		
 				print("Engaging with: {}".format(user))
@@ -94,11 +96,11 @@ class Notifications(object):
 
 	def get_notifications(self):
 		try:
+			self.browser.get('https://www.instagram.com/' + self.username)
 			button = self.browser.find_element_by_xpath("//nav/div[2]/div/div/div[3]/div/div[2]")
 		except NoSuchElementException:
 			raise RuntimeWarning('There are no notifications')
-		button.click()     
-		# all_notifications = self.browser.find_element_by_xpath("//nav/div[2]/div/div/div[3]/div/div[2]/div/div/div[4]/ul").text
+		button.click()
 		all_notifications = self.browser.find_elements_by_class_name('_75ljm')
 		return all_notifications
 
@@ -157,8 +159,8 @@ class Notifications(object):
 		return summary
 
 	def sleep(self):
-		# sleep_time_minutes = randint(self.sleep_interval_lower, self.sleep_interval_upper)
-		sleep_time_minutes = randint(2, 5)
+		sleep_time_minutes = randint(self.sleep_interval_lower, self.sleep_interval_upper)
+		# sleep_time_minutes = randint(2, 5)
 		print('Sleeping for {} starting at {}'.format(sleep_time_minutes, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 		time.sleep(60 * sleep_time_minutes) 
 

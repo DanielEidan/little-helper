@@ -133,7 +133,7 @@ class Commenter(object):
 
 	def engage_with_user(self, user): 
 		try:					
-			links = get_links(self.browser, user, randint(3, 5), True, type_flag='user')
+			links = get_links(self.browser, user, randint(2, 4), True, type_flag='user')
 		except NoSuchElementException:
 			print('Element not found, skipping {}'.fomat(user))
 		if links: # if the user is private this will be false 

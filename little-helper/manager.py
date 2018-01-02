@@ -32,7 +32,7 @@ class Manager(object):
 
 	def commenter(self, tags): 
 		self.commenter = Commenter(self.browser, username)		
-		self.commenter.comment_by_tag(tags, 1)
+		self.commenter.comment_by_tag(tags, 1, True)
 
 
 if __name__ == '__main__': 
