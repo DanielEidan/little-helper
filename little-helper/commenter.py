@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # commenter 
 
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, WebDriverException
 from util.like_util import get_links, like_image, update_user_data
-from util.clarifai_util import check_image
+from util.clarifai_util import check_image, collect_image_data
 from random import randint
 import time
 import emoji
@@ -34,7 +34,6 @@ class Commenter(object):
 							self.browser.find_element_by_class_name('_2g7d5').click()							
 							username = self.browser.current_url.split('/')[-2] 
 							self.engage_with_user(username)						
-						# Add an option here of engaging further with the user. 
 			except NoSuchElementException:
 				print('Cant get images for tag [{}/{} - {}]'.format(index, len(tags), tag.encode('utf-8')))
 				continue
@@ -62,7 +61,7 @@ class Commenter(object):
 
 					# like the image you just commented on
 					like_image(self.browser)
-				except StaleElementReferenceException as e: 
+				except (StaleElementReferenceException, WebDriverException) as e: 
 					print('Exception on comment: {}'.format(e))
 			else:
 				print('Warning: Comment Action Likely Failed: Comment Element not found')
@@ -79,7 +78,7 @@ class Commenter(object):
 		return self.username in all_comments.text
 
 	def get_comment_text(self, attributes):
-		comment = 'nice'
+		comment = random.choice(['nice', 'beautiful', 'cool'])
 		# generic attributes
 		if ('fashion' or 'model') in attributes: 			
 			if ('woman' or 'girl') in attributes:
@@ -163,3 +162,25 @@ class Commenter(object):
 		if len(comment_input) <= 0:
 			comment_input = self.browser.find_elements_by_xpath('//input[@placeholder = "Add a comment…"]')
 		return comment_input
+
+	def make_clarifai_lable_file(self, tags, amount, engage_user=False):
+		commented = 0
+		tags = list(map(str.strip, tags))
+		for index, tag in enumerate(tags, 1):
+			print('Tag [{}/{} - {}]'.format(index, len(tags), tag.encode('utf-8')))
+			try: 
+				links = get_links(self.browser, amount=amount, tag=tag.encode('utf-8'), type_flag='tag')
+				for i, link in enumerate(links, 1):
+					print('Tag [{}/{} - tag:{} link:{}]'.format(i, amount, tag.encode('utf-8'), link))					
+					self.browser.get(link)
+					success, attributes = collect_image_data(self.browser)
+					# if success:
+					# 	self.comment(attributes)
+					# 	if engage_user:
+					# 		self.browser.find_element_by_class_name('_2g7d5').click()							
+					# 		username = self.browser.current_url.split('/')[-2] 
+					# 		self.engage_with_user(username)						
+			except NoSuchElementException:
+				print('Cant get images for tag [{}/{} - {}]'.format(index, len(tags), tag.encode('utf-8')))
+				continue
+			

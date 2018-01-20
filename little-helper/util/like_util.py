@@ -67,7 +67,6 @@ def get_links(browser, username=None, amount=3, is_random=False, media=None, ski
 
 
 def update_user_data(browser, username, user_data):
-	# pdb.set_trace()
 	print('Updating data for {}'.format(username))	
 	try: 
 		browser.get('https://www.instagram.com/' + username)
@@ -78,25 +77,26 @@ def update_user_data(browser, username, user_data):
 			followers = format_number(re.match(r'.*\s',link_elems[0].text).group())
 			following = format_number(re.match(r'.*\s',link_elems[1].text).group())
 			if followers and following and username not in user_data.keys():			
-				print('Creating user data entry for {}: followers: {}, following: {}, ratio: {}, last_notification {}'.format(username, followers, following, following/float(followers), None))
-				user_data[username] = {'followers': followers, 'following': following, 'ratio': following/float(followers), 'last_notification': None}
+				print('Creating user data entry for {}: followers: {}, following: {}, ratio: {}, last_notification: {}, black_list: {}'.format(username, followers, following, following/float(followers), None, False))
+				user_data[username] = {'followers': followers, 'following': following, 'ratio': following/float(followers), 'last_notification': None, 'black_list': False}
 			elif followers and following:
 				print('Updating user data entry for {}: followers: {}, following: {}, ratio: {}'.format(username, followers, following, following/float(followers)))
 				user_data[username]['followers']  = followers
 				user_data[username]['following'] = following
 				user_data[username]['ratio'] = following/float(followers)
-				# TODO: Add a time stamp of last engagment. Then We can iterate through the users based on the last engagment time. 
 	except BaseException as e:
 		print("Error: {}".format(str(e)))
+		print('Updating user data entry for {}: black_list: {}'.format(username, True))
+		user_data[username]['black_list'] = True
 		raise NoSuchElementException
 
 def update_user_data_timestamp(username, user_data):
 	if username not in user_data.keys():
-		user_data[username] = {'followers': None, 'following': None, 'ratio': None, 'last_notification': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}
-		print('Creating user data entry for {}: followers: {}, following: {}, ratio: {}, last_notification {}'.format(username, None, None, None, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')))
+		user_data[username] = {'followers': None, 'following': None, 'ratio': None, 'last_notification': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), 'black_list': False}
+		print('Creating user data entry for {}: followers: {}, following: {}, ratio: {}, last_notification {}, black_list: {}'.format(username, None, None, None, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), False))
 	else:
 		user_data[username]['last_notification'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-		print('Updating user data notification timestamp for {} as: {}'.format(username, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')))
+		print('Updating user data last_notification timestamp for {} as: {}'.format(username, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')))
 
 def format_number(number_as_string):
 	number_as_string = number_as_string.strip()

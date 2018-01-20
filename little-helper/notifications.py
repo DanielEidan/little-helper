@@ -18,14 +18,12 @@ class Notifications(object):
 		self.sleep_interval_upper = sleep_interval_upper 
 		self.browser = browser
 		self.username = username
-	 	self.timer()
+	 	# self.timer()
 
-	def timer(self, sleep_interval_lower=25, sleep_interval_upper=35): 
+	def timer(self): 
 	 	while True: 
 			self.notifications()
-			self.save_notification_data()
-			self.save_engagement_data()
-			self.save_user_data()
+			self.save_data()
 			self.sleep()
 
 	def notifications(self):		
@@ -42,7 +40,7 @@ class Notifications(object):
 		for entry in sorted_users:
 			user = entry[0]
 			should_engage = self.should_engage(user)			
-			if should_engage[0]:				
+			if should_engage[0]:
 				print("Engaging with: {}".format(user))
 				try:
 					update_user_data(self.browser, user, self.user_data)
@@ -61,9 +59,10 @@ class Notifications(object):
 				else:
 					engagment = ('User is private', datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))
 					self.add_engagment(user, engagment)
-					print("Not engaging with: {} because they are private".format(user))
+					# print("Not engaging with: {} because they are private".format(user))
 			else:
-				print("Not engaging with: {} because {}".format(user, should_engage[1]))
+				# print("Not engaging with: {} because {}".format(user, should_engage[1]))
+				pass
 		print("Engaged with {} out of {}".format(number_engaged, len(sorted_users)))
 
 	def add_engagment(self, user, engagment):
@@ -80,6 +79,10 @@ class Notifications(object):
 			users_notifications = self.notification_tracking[user]
 		else:
 			return (False, 'this user is not in the tracked notifications')
+
+		if user in self.user_data.keys():
+			if self.user_data[user]['black_list'] ==  True:
+				return (False, 'this user is black_listed')
 
 		if user in self.engaged_already.keys(): 
 			users_engagment = self.engaged_already[user]
@@ -202,6 +205,11 @@ class Notifications(object):
 			print("user_data files initiated")
 			user_data = {}
 		self.user_data = user_data
+
+	def save_data(self): 
+		self.save_notification_data()
+		self.save_engagement_data()
+		self.save_user_data()
 
 	def save_notification_data(self): 
 		try: 

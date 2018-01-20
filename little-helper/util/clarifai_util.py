@@ -36,6 +36,35 @@ def check_image(browser):
 	
 	return True, top_just_names
 
+def collect_image_data(browser):
+	"""Uses the link to the image to check for invalid content in the image"""
+	# pdb.set_trace()
+	clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
+
+	img_link = get_imagelink(browser)
+	# Uses Clarifai's v2 API
+	model = clarifai_api.models.get('general-v1.3')
+	image = ClImage(url=img_link)
+	result = model.predict([image])
+
+	try:
+		clarify_log = json.load(open('../data/clarify_log_lecon.txt'))
+		print("Tracking files Loaded")
+	except(ValueError, IOError) as e:
+		print("Exception on load: {}".format(e))
+		print("clarify_log init")
+		clarify_log = {}
+		clarify_log['data'] = []
+        
+	clarify_log['data'].append(result)
+
+	try: 
+		json.dump(clarify_log, open('../data/clarify_log_lecon.txt', 'w'))
+	except(Exception) as e:
+		print("Exception on dump: {}".format(e)) 
+
+	return True, []
+
 
 def get_imagelink(browser):
 	"""Gets the imagelink from the given webpage open in the browser"""
