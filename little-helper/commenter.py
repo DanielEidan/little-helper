@@ -78,7 +78,7 @@ class Commenter(object):
 		return self.username in all_comments.text
 
 	def get_comment_text(self, attributes):
-		comment = random.choice(['nice', 'beautiful', 'cool'])
+		comment = random.choice(['nice', 'beautiful', 'cool', 'great shot', 'love it', 'nice work'])
 		# generic attributes
 		if ('fashion' or 'model') in attributes: 			
 			if ('woman' or 'girl') in attributes:
@@ -123,7 +123,7 @@ class Commenter(object):
 		if ('aerial') in attributes: 
 			comment = random.choice(['flying high', 'great perspective'])		
 		if ('food') in attributes: 
-			comment = random.choice(['delicious', 'yum'])
+			comment = random.choice(['delicious', 'yum', 'looks delicious'])
 
 		emoji_icon = random.choice([':smile:', ':laughing:', ':blush:', ':smiley:', ':relaxed:', ':kissing_closed_eyes:', ':flushed:', ':relieved:', ':satisfied:', ':grin:', ':wink:', ':stuck_out_tongue_winking_eye:', ':stuck_out_tongue_closed_eyes:', ':grinning:', ':kissing:', ':kissing_smiling_eyes:', ':stuck_out_tongue:', ':sunglasses:', ':fire:', ':thumbsup:', ':ok_hand:', ':wave:', ':raised_hands:', ':pray:', ':clap:', ':100:', ':heavy_check_mark:', ':bangbang:', ':heavy_exclamation_mark:'])
 		comment = emoji.emojize('{}{}'.format(comment, emoji_icon), use_aliases=True)

@@ -1,13 +1,14 @@
 # login_util
 from .time_util import sleep
 from selenium.webdriver.common.action_chains import ActionChains
-
+import pdb
 
 def login_user(browser, username, password):
-	"""Logins the user with the given username and password"""
+	"""Logins the user with the given username and password"""	
 	browser.get('https://www.instagram.com')
-	switch_language(browser)
+	# switch_language(browser)
 
+	# pdb.set_trace()
 	# Check if the first div is 'Create an Account' or 'Log In'
 	login_elem = browser.find_element_by_xpath("//article/div/div/p/a[text()='Log in']")
 	if login_elem is not None:

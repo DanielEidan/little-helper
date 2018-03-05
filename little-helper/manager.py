@@ -48,9 +48,9 @@ class Manager(object):
 		while True: 
 			self.notification_manager.notifications()
 			self.notification_manager.save_data()
-			random_tags = random.sample(tags, 3)
-			self.commenter.comment_by_tag(random_tags, 1, True)
-			sleep_time = random.randint(5, 60)
+			random_tags = random.sample(tags, 5)
+			self.commenter.comment_by_tag(random_tags, 3, True)
+			sleep_time = random.randint(1, 5)
 			print('Sleeping for {} starting at {}'.format(sleep_time, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 			time.sleep(60 * sleep_time) 
 

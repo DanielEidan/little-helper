@@ -4,8 +4,9 @@ __version__ = '0.0.1'
 __author__ = 'Daniel Eidan'
 
 requirements = [
-    'selenium==2.53.6',
-    'clarifai==2.0.31',
+    # 'selenium==2.53.6',
+    'selenium==3.9.0',
+    'clarifai==2.0.8',
     'pyvirtualdisplay',
     'emoji'
 ]
@@ -21,3 +22,6 @@ setup(
     py_modules='little-helper',
     description=description,
     install_requires=requirements)
+
+
+# python setup.py install

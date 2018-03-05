@@ -1,0 +1,4 @@
+selenium==3.9.0
+clarifai==2.0.8
+pyvirtualdisplay
+emoji

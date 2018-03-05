@@ -1,25 +1,40 @@
 # clarifai
 """Module which handles the clarifai api and checks
 the image for invalid content"""
-from clarifai.rest import ClarifaiApp, Image as ClImage
+from clarifai.rest import ClarifaiApp
+from .time_util import sleep
 from os import environ
 import operator
 import pdb
 import json 
 
 
-clarifai_api_key = 'c697787ce28e4c94a2e8214c01dd9385'
+
+
+# clarifai_api_key = 'c697787ce28e4c94a2e8214c01dd9385'
+# CLARIFAI_API_KEY = 'c697787ce28e4c94a2e8214c01dd9385'
 
 def check_image(browser):
 	"""Uses the link to the image to check for invalid content in the image"""
 	# pdb.set_trace()	
-	clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
+	app = ClarifaiApp()
+ 	model = app.models.get('general-v1.3')
 
+	sleep(1)
 	img_link = get_imagelink(browser)
-	# Uses Clarifai's v2 API
-	model = clarifai_api.models.get('general-v1.3')
-	image = ClImage(url=img_link)
-	result = model.predict([image])
+	while img_link == None: 
+		print('img_link == None')
+		sleep(2)
+		img_link = get_imagelink(browser)
+
+	
+	try: 
+		result = model.predict_by_url(url=img_link)
+	except(Exception) as e:
+		print("Exception on predict: {}".format(e))
+		pdb.set_trace()
+		return False, []
+
 	result = result['outputs'][0]
 
 	# Get all the clarify tags and names in the format (name, confidence)
@@ -39,7 +54,8 @@ def check_image(browser):
 def collect_image_data(browser):
 	"""Uses the link to the image to check for invalid content in the image"""
 	# pdb.set_trace()
-	clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
+	# clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
+	clarifai_api = ClarifaiApp()
 
 	img_link = get_imagelink(browser)
 	# Uses Clarifai's v2 API
