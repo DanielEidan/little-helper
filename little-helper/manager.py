@@ -38,8 +38,8 @@ class Manager(object):
 if __name__ == '__main__': 
 
 	# These will be removed. 
-	username = 'with.eden'
-	password = '438queenwest'
+	username = ''
+	password = ''
 
 	# Log in with the manager 
 	session = Manager(username, password)
