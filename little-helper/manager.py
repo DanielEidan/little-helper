@@ -1,6 +1,8 @@
 # Manager class 
 from browser import Browser
+#from pyvirtualdisplay import Display
 from notifications import Notifications
+from follower import Follower 
 from datetime import datetime
 from commenter import Commenter
 from util.login_util import login_user
@@ -49,19 +51,37 @@ class Manager(object):
 			self.notification_manager.notifications()
 			self.notification_manager.save_data()
 			random_tags = random.sample(tags, 5)
-			self.commenter.comment_by_tag(random_tags, 3, True)
-			sleep_time = random.randint(1, 5)
+			self.commenter.comment_by_tag(random_tags, 5, True)
+			sleep_time = random.randint(1, 20)
 			print('Sleeping for {} starting at {}'.format(sleep_time, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 			time.sleep(60 * sleep_time) 
 
-			
+	def follow_strategy(self):
+		self.follower = Follower(self.browser, self.username)
+		# self.follower.report()
+		# self.follower.update_followers()
+		# self.follower.update_following()
+		# self.follower.engage_with_followers_followers()
+		self.follower.engage_with_feed()
+
+	def follow_strategy_mix(self):
+		self.follower = Follower(self.browser, self.username)
+		self.notification_manager = Notifications(self.browser, self.username)
+		self.follower.report()
+		while True: 
+			self.notification_manager.notifications()
+			self.notification_manager.save_data()
+			self.follower.engage_with_followers_followers()		
+			sleep_time = random.randint(1, 10)
+			print('Sleeping for {} starting at {}'.format(sleep_time, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+			time.sleep(60 * sleep_time) 
 
 
 if __name__ == '__main__': 
 
 	# These will be removed. 
-	username = 'with.eden'
-	password = '438queenwest'
+	username = ''
+	password = ''
 
 
 
@@ -120,3 +140,7 @@ if __name__ == '__main__':
 	# session.notification_manager()
 	session.mix_comments_notifications(tags) 
 	# session.commenter_lables(tags_lecon, 2)
+	
+	# session.follow_strategy_mix()
+	# session.follow_strategy()
+

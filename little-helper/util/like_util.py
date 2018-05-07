@@ -1,7 +1,7 @@
 # like_util
 import random
 from math import ceil
-from .time_util import sleep 
+from .time_util import sleep
 from datetime import datetime, timedelta
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
@@ -31,6 +31,7 @@ def get_links(browser, username=None, amount=3, is_random=False, media=None, ski
 		by amount and returns a list of links
 		Raises: NoSuchElementException
 	"""
+	# pdb.set_trace()
 	media = get_media_formats(media)
 	if type_flag == 'user':
 		print('Attempting to get image list for {}'.format(username))
@@ -63,11 +64,13 @@ def get_links(browser, username=None, amount=3, is_random=False, media=None, ski
 		raise NoSuchElementException
 	if is_random:
 		links = random.sample(links, len(links))
+	# pdb.set_trace()
 	return links[:amount]
 
 
 def update_user_data(browser, username, user_data):
-	print('Updating data for {}'.format(username))	
+	print('Updating data for {}'.format(username))
+	# pdb.set_trace()	
 	try: 
 		browser.get('https://www.instagram.com/' + username)
 		sleep(1)
@@ -87,7 +90,10 @@ def update_user_data(browser, username, user_data):
 	except BaseException as e:
 		print("Error: {}".format(str(e)))
 		print('Updating user data entry for {}: black_list: {}'.format(username, True))
-		user_data[username]['black_list'] = True
+		if username not in user_data.keys():
+			user_data[username]= {'black_list': True }
+		else:
+			user_data[username]['black_list'] = True
 		raise NoSuchElementException
 
 def update_user_data_timestamp(username, user_data):
@@ -97,6 +103,25 @@ def update_user_data_timestamp(username, user_data):
 	else:
 		user_data[username]['last_notification'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 		print('Updating user data last_notification timestamp for {} as: {}'.format(username, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')))
+
+def update_user_data_following_me_status(username, status, user_data):
+	if username not in user_data.keys():
+		# the code bellow assume that all the dict enries need to have the keys in them in order to be updates. Not true. all Nones can be removed. 
+		user_data[username] = {'followers': None, 'following': None, 'ratio': None, 'last_notification': None, 'black_list': False, 'following_me': status}
+		print('Creating user data entry for {}: followers: {}, following: {}, ratio: {}, last_notification {}, black_list: {}, following_me: {}'.format(username, None, None, None, None, False, status))
+	else:
+		user_data[username]['following_me'] = status
+		print('Updating user data following_me for user {} as {}'.format(username, status))
+
+def update_user_data_following_them_status(username, status, user_data):
+	if username not in user_data.keys():
+		# the code bellow assume that all the dict enries need to have the keys in them in order to be updates. Not true. all Nones can be removed. 
+		user_data[username] = {'followers': None, 'following': None, 'ratio': None, 'last_notification': None, 'black_list': False, 'following_them': status}
+		print('Creating user data entry for {}: followers: {}, following: {}, ratio: {}, last_notification {}, black_list: {}, following_them: {}'.format(username, None, None, None, None, False, status))
+	else:
+		user_data[username]['following_them'] = status
+		print('Updating user data following_them for user {} as {}'.format(username, status))
+
 
 def format_number(number_as_string):
 	number_as_string = number_as_string.strip()
@@ -117,12 +142,13 @@ def scroll_bottom(browser, element, range_int):
 	num_elements = 0 
 	for i in range(int(range_int / 2)):        
 		if num_elements != len(browser.find_elements_by_xpath("//div/div/span/button[text()='Following']")) and i != 0:            
-			num_elements = len(browser.find_elements_by_xpath("//div/div/span/button[text()='Following']"))                        
+			num_elements = len(browser.find_elements_by_xpath("//div/div/span/button[text()='Following']"))
 			browser.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", element)            
 			time.sleep(randint(1,3))
 	return
 
 def get_media_formats(media):
+	# pdb.set_trace()
 	result = None
 	if media is None:
 		# All known media types

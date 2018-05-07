@@ -20,19 +20,15 @@ def check_image(browser):
 	app = ClarifaiApp()
  	model = app.models.get('general-v1.3')
 
-	sleep(1)
+	sleep(2)
 	img_link = get_imagelink(browser)
-	while img_link == None: 
+	if img_link == None: 
 		print('img_link == None')
-		sleep(2)
-		img_link = get_imagelink(browser)
-
-	
+		return False, []
 	try: 
 		result = model.predict_by_url(url=img_link)
 	except(Exception) as e:
 		print("Exception on predict: {}".format(e))
-		pdb.set_trace()
 		return False, []
 
 	result = result['outputs'][0]

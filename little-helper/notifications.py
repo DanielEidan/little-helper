@@ -111,10 +111,15 @@ class Notifications(object):
 		return all_notifications
 
 	def parse_notifications(self, notifications):
+		# pdb.set_trace()
 		for i in range(len(notifications)):
 			notification = notifications[i]
-			username = notification.find_element_by_class_name('_2g7d5').text
-			raw_action = notification.find_element_by_class_name('_b96u5').text
+			try:
+				username = notification.find_element_by_class_name('_2g7d5').text
+				raw_action = notification.find_element_by_class_name('_b96u5').text
+			except (NoSuchElementException, StaleElementReferenceException) as e:
+				print(e)
+				continue
 			if 'like' in raw_action:
 				action = 'like'
 			elif 'comment' in raw_action:
@@ -225,9 +230,9 @@ class Notifications(object):
 		except(Exception) as e:
 			print("Exception saving engaged_already: {}".format(e)) 
 
-	def save_user_data(self): 
+	def save_user_data(self):
 		try: 
 			json.dump(self.user_data, open('../data/user_data.txt', 'w'))
 			print("user_data file saved")
 		except(Exception) as e:
-			print("Exception saving user_data: {}".format(e)) 
+			print("Exception saving user_data: {}".format(e))
