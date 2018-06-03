@@ -80,6 +80,6 @@ def collect_image_data(browser):
 
 def get_imagelink(browser):
 	"""Gets the imagelink from the given webpage open in the browser"""
-	return browser.find_element_by_xpath('//img[@class = "_2di5p"]') \
+	return browser.find_element_by_xpath('//img[@class = "FFVAD"]') \
 		.get_attribute('src')
 

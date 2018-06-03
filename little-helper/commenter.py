@@ -17,28 +17,31 @@ class Commenter(object):
 		self.browser = browser
 		self.username = username
 		
-	def comment_by_tag(self, tags, amount, engage_user=False):		
+	def comment_by_tag(self, tags, amount, engage_user=False):			
 		commented = 0
 		tags = list(map(str.strip, tags))
 		for index, tag in enumerate(tags, 1):
 			print('Tag [{}/{} - {}]'.format(index, len(tags), tag.encode('utf-8')))
 			try: 
+				# pdb.set_trace()
 				links = get_links(self.browser, amount=amount, tag=tag.encode('utf-8'), type_flag='tag')
 				for i, link in enumerate(links, 1):
 					print('Tag [{}/{} - tag:{} link:{}]'.format(i, amount, tag.encode('utf-8'), link))					
 					self.browser.get(link)
 					success, attributes = check_image(self.browser)
 					if success:
+						# pdb.set_trace()
 						self.comment(attributes)
 						if engage_user:
-							try: 
-								self.browser.find_element_by_class_name('_2g7d5').click()
+							try:
+								# pdb.set_trace()
+								self.browser.find_element_by_class_name('FPmhX').click()
 							except (StaleElementReferenceException, WebDriverException) as e: 
 								print(e)
 								continue
 							username = self.browser.current_url.split('/')[-2] 
 							self.engage_with_user(username)						
-			except NoSuchElementException:
+			except NoSuchElementException:				
 				print('Cant get images for tag [{}/{} - {}]'.format(index, len(tags), tag.encode('utf-8')))
 				continue
 			
@@ -78,7 +81,11 @@ class Commenter(object):
 	def did_comment_already(self):
 		# Note: if there are more comments than visible in the browser this function does not load them all. 
 		# 		therfore there is a chance that this will return a false negative. 
-		all_comments = self.browser.find_element_by_class_name('_4a48i')
+		# pdb.set_trace()
+		# all_comments = self.browser.find_element_by_class_name('_4a48i')
+		all_comments = self.browser.find_element_by_class_name('JKY4Z')
+		
+		# Xl2Pu
 		return self.username in all_comments.text
 
 	def get_comment_text(self, attributes):
@@ -140,7 +147,7 @@ class Commenter(object):
 		try:					
 			links = get_links(self.browser, user, randint(2, 4), True, type_flag='user')
 		except NoSuchElementException:
-			print('Element not found, skipping {}'.fomat(user))
+			print('Element not found, skipping {}'.format(user))
 		if links: # if the user is private this will be false 
 			for link in links:
 				print("liking: {}".format(link))

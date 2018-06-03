@@ -4,6 +4,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import pdb
 
 def login_user(browser, username, password):
+	pdb.set_trace()
 	"""Logins the user with the given username and password"""	
 	browser.get('https://www.instagram.com')
 	# switch_language(browser)

@@ -100,7 +100,7 @@ if __name__ == '__main__':
 	tags = ['snobshots','makeportraits','thecreatorclass','creativevagrants','agameoftones',
 	'moodygrams','fatalframes','theimaged','urbangathering','way2ill','illgrammers','vsco','streetdreamsmag',
 	'visualsgang','dailyfeatures','exploretocreate','theoutbound','createexplore','ig_color','ig_masterpiece',
-	'superhubs','visualcreators','thecreatorclass','artofvisuals','aov','thecreatorclass','createcommune',
+	'superhubs','visualcreators','artofvisuals','aov','createcommune',
 	'bnw_sniper','jointheclass','exploreeverything','visualarchitects','hsdailyfeature','hbouthere',
 	'createexploretakeover','monochrome','explorecanada','hypebeast','liveauthentic','blackandwhite','makeadventure',
 	'rsa_streetview','bnw','streetsoftoronto','lovetoronto','mobilemag','blackandwhiteisworththefight','fashion',
@@ -136,9 +136,11 @@ if __name__ == '__main__':
 	'luxuryhotel', 'luxurytrip', 'wanderlust', 'hotellife', 'staycation', 'boutiquehotel', 'luxuryliving', 
 	'abstractart', 'abstractpose', 'abstractmodel', 'abstractphotography', 'visualsofart', 'visualsoflife']
 
+	tags2 = ['createexploretakeover', 'mkexplore', 'killeverygram', 'urbanandstreet', 'hsdailyfeature', 'hbouthere', 'aov', 'meistershots', 'uncalculated', 'yngkillers', 'streetmobs', 'citykillerz', 'visualsgang', 'visualarchitects', 'streetshared', 'instamagazine_', 'estheticlabel', 'streetmagazine', 'visualambassadors', 'highsnobiety', 'gearednomad', 'createyourhype', 'shotzdelight', 'streetactivity', 'instagoodmyphoto', 'primeshots', '1stinstinct', 'symmetricalmonsters', 'postthepeople', 'imaginatones', 'toronto', 'torontolife', 'the6ix', 'canada', 'yyz', 'the6', 'thesix', '416', 'tdot', '6ix', 'streetsoftoronto', 'lovetoronto', 'torontophoto', 'ontario', 'mississauga', 'igerstoronto', 'blogto', 'toronto_insta', 'torontoigers', 'thankyoutoronto', 'wethenorth', 'downtowntoronto', 'torontofashion', 'torontofood', '6ixwalks', 'scarborough', 'brampton', 'imagesoftoronto', 'gta', 'torontophotography', 'urbanandstreet', 'aov', 'yngkillers', 'killeverygram', 'citykillerz', 'meistershots', 'shotzdelight', 'ig_color', 'streetmobs', 'mkexplore', 'createexploretakeover', 'streetshared', 'streetmagazine', 'gearednomad', 'visualambassadors', 'folkgood', 'hsdailyfeature', 'vzcomood', 'uncalculated', 'visualsgang', 'weekly_feature', 'mg5k', 'imaginatones', 'symmetricalmonsters', 'visualarchitects', 'hbouthere', 'instagoodmyphoto', 'rsa_streetview', 'portraitpage', 'usaprimeshot']
+
 	# Run the notification module 
 	# session.notification_manager()
-	session.mix_comments_notifications(tags) 
+	session.mix_comments_notifications(tags2) 
 	# session.commenter_lables(tags_lecon, 2)
 	
 	# session.follow_strategy_mix()

@@ -26,9 +26,9 @@ class Notifications(object):
 			self.save_data()
 			self.sleep()
 
-	def notifications(self):		
+	def notifications(self):
 		all_notifications = self.get_notifications()
-		self.parse_notifications(all_notifications)				
+		self.parse_notifications(all_notifications)
 		self.act_on_notifications()
 
 	def act_on_notifications(self):
@@ -107,7 +107,13 @@ class Notifications(object):
 		except NoSuchElementException:
 			raise RuntimeWarning('There are no notifications')
 		button.click()
-		all_notifications = self.browser.find_elements_by_class_name('_75ljm')
+		# To accumulate notifications we need to add some scrolling lodgic here. 
+		# this code scrolls to the bottom and only 11 elements are loaded up into the DOM at a time
+		# y = self.browser.find_element_by_class_name('nCY9N')
+		# self.browser.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", y)
+		all_notifications = self.browser.find_elements_by_class_name('PUHRj')
+		# also the last three elements here are not notifications
+
 		return all_notifications
 
 	def parse_notifications(self, notifications):
@@ -115,8 +121,10 @@ class Notifications(object):
 		for i in range(len(notifications)):
 			notification = notifications[i]
 			try:
-				username = notification.find_element_by_class_name('_2g7d5').text
-				raw_action = notification.find_element_by_class_name('_b96u5').text
+				# username = notification.find_element_by_class_name('_2g7d5').text
+				# raw_action = notification.find_element_by_class_name('_b96u5').text
+				username = notification.find_element_by_class_name('FPmhX').text
+				raw_action = notification.find_element_by_class_name('YFq-A').text
 			except (NoSuchElementException, StaleElementReferenceException) as e:
 				print(e)
 				continue
@@ -126,7 +134,8 @@ class Notifications(object):
 				action = 'comment'
 			elif 'follow' in raw_action:
 				action = 'follow'
-			raw_time = notification.find_element_by_class_name('_3lema').get_attribute('datetime')
+			# raw_time = notification.find_element_by_class_name('_3lema').get_attribute('datetime')
+			raw_time = notification.find_element_by_class_name('HsXaJ').get_attribute('datetime')			
 			time = raw_time.split('T')[0] + ' ' + raw_time.split('T')[1][:-1]
 			if username and action and time:
 				if self.add_action(time, username, action):
