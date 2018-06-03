@@ -80,8 +80,8 @@ class Manager(object):
 if __name__ == '__main__': 
 
 	# These will be removed. 
-	username = ''
-	password = ''
+	username = 'with.eden'
+	password = '438queenwest'
 
 
 

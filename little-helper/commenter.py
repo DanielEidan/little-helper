@@ -89,7 +89,7 @@ class Commenter(object):
 		return self.username in all_comments.text
 
 	def get_comment_text(self, attributes):
-		comment = random.choice(['nice', 'beautiful', 'cool', 'great shot', 'love it', 'nice work', 'good stuff'])
+		comment = random.choice(['nice', 'beautiful', 'cool', 'great shot', 'love it', 'nice work', 'good stuff', 'great stuff', 'nice stuff', 'very cool'])
 		# generic attributes
 		if ('fashion' or 'model') in attributes: 			
 			if ('woman' or 'girl') in attributes:
@@ -106,29 +106,29 @@ class Commenter(object):
 		if 'monochrome' in attributes:
 			comment = random.choice(['love the black and white', 'no colour needed'])
 		if 'sky' in attributes:
-			comment = random.choice(['beautiful sky', 'that sky view though'])
+			comment = random.choice(['beautiful sky', 'that sky view though', 'that sky is amazing', 'sky view', 'wow that sky'])
 		if ('vehicle' or 'car' or 'transportation system') in attributes:
 			comment = random.choice(['nice ride', 'nice whip', 'dope ride', 'nice wheels'])
 		if ('building' or 'architecture') in attributes:
 			comment = random.choice(['beautiful architecture', 'nice lines', 'nice building', 'great lines', 'love the architecture', "that's a great perspective"])
 		if 'water' in attributes:
-			comment = random.choice(['that water', 'I want to jump right in', 'love the water', 'beautiful water'])
+			comment = random.choice(['that water', 'I want to jump right in', 'love the water', 'beautiful water', 'that water looks amazing', 'wow, that water'])
 		if ('winter' or 'snow') in attributes: 
 			comment = random.choice(['winter magic', 'beautiful snow', 'winter wonderland', 'snow', 'snow white', 'love the winter vibes'])
 		if ('sneakers' or 'foot' or 'shoe' or 'footwear') in attributes:
 			comment = random.choice(['nice kick', 'dope cop', 'kicks on fire', 'fire kicks', 'save me a pair'])
 		if ('sexy' or 'nude') in attributes:
-			comment = random.choice(['so sexy', 'sexy', 'damn', 'hot', 'omg, wow', 'sexy look'])
+			comment = random.choice(['so sexy', 'sexy', 'damn', 'hot', 'omg, wow', 'sexy look', 'so hot', 'god damn'])
 		if ('child') in attributes:
 			comment = random.choice(['so cute', 'adorable', 'precious', 'awwww...'])
 		if ('street' or 'city') in attributes:
-			comment = random.choice(['urban vibes', 'street style', 'urban grind', 'urban streets'])
+			comment = random.choice(['urban vibes', 'street style', 'urban grind', 'urban streets', 'city shot, nice!'])
 		if 'travel' in attributes: 
-			comment = random.choice(['wanderlust', 'destination goals', "I've never been there!"])
+			comment = random.choice(['wanderlust', 'destination goals', "I've never been there!", 'great location', 'amazing location', 'what a destination'])
 		if ('landscape' or 'outdoors' or 'adventure' or 'travel', 'nature') in attributes:
 			comment = random.choice(['that view', 'view goals', 'keep exploring', 'look at that view'])
 		if ('watch' or 'clock') in attributes: 
-			comment = random.choice(['nice piece', 'keep that time'])			
+			comment = random.choice(['nice piece', 'keep that time'])
 		if ('aerial') in attributes: 
 			comment = random.choice(['flying high', 'great perspective'])		
 		if ('food') in attributes: 
